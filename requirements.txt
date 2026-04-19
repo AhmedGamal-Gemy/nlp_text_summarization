@@ -1,0 +1,12 @@
+torch
+transformers
+sentence-transformers
+datasets
+rouge-score
+nltk
+scikit-learn
+streamlit
+numpy
+pandas
+sacremoses
+sentencepiece
