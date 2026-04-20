@@ -33,3 +33,6 @@ DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
 # Paths
 CHECKPOINT_DIR = Path("checkpoints")
 DATA_CACHE = Path("data/dataset_cache")
+
+# Fine-tuned model (optional)
+FINETUNED_MODEL = CHECKPOINT_DIR / "bart-finetuned"

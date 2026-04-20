@@ -17,14 +17,26 @@ class AbstractiveSummarizer:
 
     Uses facebook/bart-large-cnn pretrained on CNN/DailyMail for
     generating fluent abstractive summaries.
+    Can also load fine-tuned checkpoints.
     """
 
-    def __init__(self):
-        """Initialize BART model and tokenizer."""
-        self.tokenizer = AutoTokenizer.from_pretrained(config.BART_MODEL)
-        self.model = AutoModelForSeq2SeqLM.from_pretrained(config.BART_MODEL)
+    def __init__(self, model_path: str = None):
+        """Initialize BART model and tokenizer.
+
+        Args:
+            model_path: Optional path to fine-tuned model checkpoint.
+                        If None, uses pretrained facebook/bart-large-cnn.
+        """
+        model_name = model_path if model_path else config.BART_MODEL
+        self.tokenizer = AutoTokenizer.from_pretrained(model_name)
+        self.model = AutoModelForSeq2SeqLM.from_pretrained(model_name)
         self.model.to(config.DEVICE)
         self.model.eval()
+        self.is_finetuned = model_path is not None
+        if self.is_finetuned:
+            print(f"Loaded fine-tuned model from: {model_path}")
+        else:
+            print(f"Loaded pretrained model: {config.BART_MODEL}")
 
     def summarize(self, article: str) -> str:
         """Generate abstractive summary for a single article.
