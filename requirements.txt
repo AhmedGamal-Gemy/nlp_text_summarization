@@ -1,4 +1,4 @@
-torch
+# torch - externally managed, DO NOT ADD
 transformers
 sentence-transformers
 datasets

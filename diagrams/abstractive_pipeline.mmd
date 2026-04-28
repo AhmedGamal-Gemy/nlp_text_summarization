@@ -1,0 +1,60 @@
+flowchart LR
+    subgraph INPUT["INPUT"]
+        A["📄 Raw Article<br/>~700 words"]
+    end
+
+    subgraph TOKENIZE["1️⃣ TOKENIZATION"]
+        T1["Add 'summarize: ' prefix"]
+        T2["BPE Tokenizer"]
+        T3["Convert to token IDs"]
+        T4["Truncate to 1024 tokens"]
+    end
+
+    subgraph ENCODE["2️⃣ ENCODING"]
+        E1["12 Encoder Layers"]
+        E2["Bidirectional<br/>Self-Attention"]
+        E3["Contextual<br/>Representations"]
+    end
+
+    subgraph GENERATE["3️⃣ GENERATION (DECODING)"]
+        G1["Start with '<s>' token"]
+        G2["Autoregressive:<br/>generate one at a time"]
+        subgraph BEAM["Beam Search (beams=4)"]
+            B1["Maintain 4 candidates"]
+            B2["Each expands to<br/>most likely next token"]
+            B3["Length penalty (1.0)"]
+            B4["no_repeat_ngram_size=3"]
+        end
+    end
+
+    subgraph STOP["4️⃣ STOPPING"]
+        S1["Stop at '</s>' token"]
+        S2["Max 130 tokens generated"]
+        S3["Min 30 tokens"]
+    end
+
+    subgraph DECODE["5️⃣ DECODING"]
+        D1["Token IDs → Words"]
+        D2["Join tokens"]
+        D3["Summary Output<br/>~50 words"]
+    end
+
+    INPUT --> TOKENIZE
+    TOKENIZE --> T1 --> T2 --> T3 --> T4
+    T4 --> ENCODE
+    ENCODE --> E1 --> E2 --> E3
+    E3 --> GENERATE
+    GENERATE --> G1 --> G2 --> BEAM
+    BEAM --> B1 --> B2 --> B3 --> B4
+    B4 --> STOP
+    STOP --> S1 --> S2 --> S3
+    S3 --> DECODE
+    DECODE --> D1 --> D2 --> D3
+
+    style INPUT fill:#742a2a,stroke:#fc8181,color:#fff
+    style TOKENIZE fill:#2d3748,stroke:#f6ad55,color:#fff
+    style ENCODE fill:#2d3748,stroke:#f6ad55,color:#fff
+    style GENERATE fill:#2d3748,stroke:#ed8936,color:#fff
+    style BEAM fill:#1a202c,stroke:#ed8936,color:#fff
+    style STOP fill:#2d3748,stroke:#fbd38d,color:#fff
+    style DECODE fill:#742a2a,stroke:#f6ad55,color:#fff

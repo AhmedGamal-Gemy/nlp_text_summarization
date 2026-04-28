@@ -1,0 +1,65 @@
+sequenceDiagram
+    autonumber
+    actor User as 👤 User
+    participant Streamlit as 🌐 Streamlit App
+    participant Preproc as 🔧 Preprocessing
+    participant TFIDF as 📌 TF-IDF
+    participant Embed as 📎 Embeddings
+    participant BART as ✨ BART Model
+    participant ROUGE as 📊 ROUGE Evaluator
+
+    Note over User,ROUGE: ENTIRE SUMMARIZATION WORKFLOW
+
+    User->>Streamlit: Enter article text
+    User->>Streamlit: Select model (Extractive/Abstractive/Compare)
+
+    alt Extractive Path
+        Streamlit->>Preproc: Call preprocessing
+        Preproc-->>Streamlit: Return cleaned text
+
+        Streamlit->>TFIDF: Calculate sentence scores
+        TFIDF-->>Streamlit: TF-IDF scores
+
+        Streamlit->>Embed: Compute similarities
+        Embed-->>Streamlit: Embedding scores
+
+        Streamlit->>Streamlit: Combine (50% each)
+        Streamlit->>Streamlit: Select top-K sentences
+        Streamlit-->>User: Display Extractive Summary
+
+    else Abstractive Path
+        Streamlit->>Preproc: Call preprocessing
+        Preproc-->>Streamlit: Return cleaned text
+
+        Streamlit->>BART: Tokenize + Encode
+        BART-->>Streamlit: Context embeddings
+
+        Streamlit->>BART: Beam search generation
+        loop 4 Beams
+            BART->>BART: Expand top tokens
+            BART->>BART: Apply length penalty
+            BART->>BART: Block repeated n-grams
+        end
+        BART-->>Streamlit: Generated token IDs
+
+        Streamlit->>BART: Decode tokens
+        BART-->>Streamlit: Summary text
+        Streamlit-->>User: Display Abstractive Summary
+
+    end
+
+    alt ROUGE Evaluation
+        User->>Streamlit: Enter reference summary
+        User->>Streamlit: Click "Evaluate"
+
+        Streamlit->>ROUGE: Compute ROUGE-1/2/L
+        ROUGE->>ROUGE: Tokenize + Stem
+        ROUGE->>ROUGE: Count n-gram overlap
+        ROUGE->>ROUGE: Calculate F-measure
+        ROUGE-->>Streamlit: ROUGE scores
+
+        Streamlit->>Streamlit: Compute compression ratio
+        Streamlit-->>User: Display metrics dashboard
+    end
+
+    Note over User,ROUGE: Model comparison shows side-by-side results

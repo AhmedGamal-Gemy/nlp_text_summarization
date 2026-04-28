@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html><head><meta charset="UTF-8">
+<style>body{margin:0;padding:16px;font-family:sans-serif;background:transparent;}</style>
+</head><body>
+<svg width="100%" viewBox="0 0 680 520" role="img">
+<title>Extractive summarizer internals</title>
+<defs>
+  <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+    <path d="M2 1L8 5L2 9" fill="none" stroke="#555" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+  </marker>
+  <marker id="arrow-teal" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+    <path d="M2 1L8 5L2 9" fill="none" stroke="#1a7a5e" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+  </marker>
+  <marker id="arrow-purple" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+    <path d="M2 1L8 5L2 9" fill="none" stroke="#4a40b0" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+  </marker>
+</defs>
+
+<text font-size="15" font-weight="600" x="340" y="24" text-anchor="middle" fill="#111">Extractive summarizer — how sentence scoring works</text>
+
+<!-- Article input -->
+<rect x="190" y="38" width="300" height="44" rx="8" fill="#E8E8E8" stroke="#999" stroke-width="0.8"/>
+<text font-size="13" font-weight="600" x="340" y="56" text-anchor="middle" dominant-baseline="central" fill="#111">Article — split into sentences</text>
+<text font-size="11" x="340" y="74" text-anchor="middle" dominant-baseline="central" fill="#333">sent_tokenize() → [s1, s2, s3 ... sN]</text>
+
+<!-- Fork to two scoring paths -->
+<line x1="280" y1="82" x2="185" y2="116" stroke="#1a7a5e" stroke-width="1.5" marker-end="url(#arrow-teal)"/>
+<line x1="400" y1="82" x2="495" y2="116" stroke="#4a40b0" stroke-width="1.5" marker-end="url(#arrow-purple)"/>
+
+<!-- TF-IDF path -->
+<rect x="40" y="120" width="260" height="64" rx="8" fill="#A8DCC8" stroke="#1a7a5e" stroke-width="0.8"/>
+<text font-size="13" font-weight="600" x="170" y="140" text-anchor="middle" dominant-baseline="central" fill="#111">TF-IDF scoring</text>
+<text font-size="11" x="170" y="158" text-anchor="middle" dominant-baseline="central" fill="#0a2a20">Build sentence×word matrix</text>
+<text font-size="11" x="170" y="174" text-anchor="middle" dominant-baseline="central" fill="#0a2a20">score(s) = sum of TF-IDF weights</text>
+
+<!-- Embedding path -->
+<rect x="380" y="120" width="260" height="64" rx="8" fill="#C8C2F0" stroke="#4a40b0" stroke-width="0.8"/>
+<text font-size="13" font-weight="600" x="510" y="140" text-anchor="middle" dominant-baseline="central" fill="#111">Embedding scoring</text>
+<text font-size="11" x="510" y="158" text-anchor="middle" dominant-baseline="central" fill="#110d40">Encode doc + each sentence</text>
+<text font-size="11" x="510" y="174" text-anchor="middle" dominant-baseline="central" fill="#110d40">score(s) = cosine_sim(s, doc)</text>
+
+<!-- Arrows to combine -->
+<line x1="170" y1="184" x2="270" y2="252" stroke="#1a7a5e" stroke-width="1.5" marker-end="url(#arrow-teal)"/>
+<line x1="510" y1="184" x2="410" y2="252" stroke="#4a40b0" stroke-width="1.5" marker-end="url(#arrow-purple)"/>
+
+<!-- Combine scores -->
+<rect x="190" y="256" width="300" height="44" rx="8" fill="#E8E8E8" stroke="#999" stroke-width="0.8"/>
+<text font-size="13" font-weight="600" x="340" y="274" text-anchor="middle" dominant-baseline="central" fill="#111">Combine scores</text>
+<text font-size="11" x="340" y="292" text-anchor="middle" dominant-baseline="central" fill="#333">final = 0.5 × tfidf_score + 0.5 × embed_score</text>
+
+<line x1="340" y1="300" x2="340" y2="324" stroke="#555" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+<!-- Rank -->
+<rect x="190" y="328" width="300" height="44" rx="8" fill="#A8DCC8" stroke="#1a7a5e" stroke-width="0.8"/>
+<text font-size="13" font-weight="600" x="340" y="346" text-anchor="middle" dominant-baseline="central" fill="#111">Rank sentences by score</text>
+<text font-size="11" x="340" y="364" text-anchor="middle" dominant-baseline="central" fill="#0a2a20">argsort(scores)[::-1] → top K indices</text>
+
+<line x1="340" y1="372" x2="340" y2="396" stroke="#555" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+<!-- Reorder -->
+<rect x="190" y="400" width="300" height="44" rx="8" fill="#A8DCC8" stroke="#1a7a5e" stroke-width="0.8"/>
+<text font-size="13" font-weight="600" x="340" y="418" text-anchor="middle" dominant-baseline="central" fill="#111">Restore original order</text>
+<text font-size="11" x="340" y="436" text-anchor="middle" dominant-baseline="central" fill="#0a2a20">sort selected indices → join sentences</text>
+
+<line x1="340" y1="444" x2="340" y2="468" stroke="#555" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+<!-- Output -->
+<rect x="190" y="472" width="300" height="36" rx="8" fill="#E8E8E8" stroke="#999" stroke-width="0.8"/>
+<text font-size="13" font-weight="600" x="340" y="490" text-anchor="middle" dominant-baseline="central" fill="#111">Extractive summary — top 3 sentences</text>
+
+<!-- Why reorder note -->
+<text font-size="11" x="530" y="418" text-anchor="start" fill="#555">← preserves</text>
+<text font-size="11" x="530" y="432" text-anchor="start" fill="#555">narrative flow</text>
+</svg>
+</body></html>

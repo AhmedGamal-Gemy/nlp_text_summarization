@@ -1,0 +1,96 @@
+flowchart TB
+    subgraph INPUT["📥 INPUT LAYER"]
+        A[("📄 Article Text")]
+        B[("📝 Highlights<br/>(reference)")]
+    end
+
+    subgraph PREP["🔧 PREPROCESSING"]
+        P1["Sentence Tokenization<br/>(NLTK sent_tokenize)"]
+        P2["Text Cleaning<br/>(lowercase, strip)"]
+    end
+
+    subgraph EXTRACTIVE["📌 EXTRACTIVE MODEL"]
+        subgraph TFIDF["TF-IDF Pipeline"]
+            T1["Fit Vocabulary<br/>(training corpus)"]
+            T2["Calculate TF<br/>(term frequency)"]
+            T3["Calculate IDF<br/>(inverse document freq)"]
+            T4["Score Sentences"]
+        end
+
+        subgraph EMBED["Embedding Pipeline"]
+            E1["Load Sentence Transformer<br/>(all-MiniLM-L6-v2)"]
+            E2["Encode Sentences<br/>(384-dim vectors)"]
+            E3["Cosine Similarity"]
+        end
+
+        COMB["Combine Scores<br/>50% TF-IDF + 50% Embed"]
+        SEL["Select Top-K Sentences"]
+        RESTORE["Restore Original Order"]
+    end
+
+    subgraph ABSTRACTIVE["✨ ABSTRACTIVE MODEL"]
+        subgraph BART["BART-large-cnn"]
+            TOK["Tokenize<br/>(max 1024 tokens)"]
+            ENC["Encode Article"]
+            BEAM["Beam Search<br/>(beams=4)"]
+            DEC["Generate Tokens"]
+            DETOK["Detokenize"]
+        end
+    end
+
+    subgraph EVAL["📊 EVALUATION"]
+        ROUGE["ROUGE Scoring<br/>(1, 2, L)"]
+        COMP["Compression Ratio"]
+    end
+
+    subgraph OUTPUT["📤 OUTPUT"]
+        EXT_OUT[("Extractive Summary")]
+        ABS_OUT[("Abstractive Summary")]
+        METRICS[("Metrics Dashboard")]
+    end
+
+    A --> P1
+    P1 --> P2
+    P2 --> T1
+    P2 --> E1
+    
+    T1 --> T2
+    T2 --> T3
+    T3 --> T4
+    
+    E1 --> E2
+    E2 --> E3
+    
+    T4 --> COMB
+    E3 --> COMB
+    COMB --> SEL
+    SEL --> RESTORE
+    RESTORE --> EXT_OUT
+    
+    A --> TOK
+    TOK --> ENC
+    ENC --> BEAM
+    BEAM --> DEC
+    DEC --> DETOK
+    DETOK --> ABS_OUT
+    
+    B --> ROUGE
+    EXT_OUT --> ROUGE
+    ABS_OUT --> ROUGE
+    
+    A --> COMP
+    EXT_OUT --> COMP
+    ABS_OUT --> COMP
+    
+    ROUGE --> METRICS
+    COMP --> METRICS
+
+    style INPUT fill:#2d3748,stroke:#4299e1,color:#fff
+    style PREP fill:#2d3748,stroke:#9f7aea,color:#fff
+    style EXTRACTIVE fill:#2d3748,stroke:#48bb78,color:#fff
+    style ABSTRACTIVE fill:#2d3748,stroke:#ed8936,color:#fff
+    style EVAL fill:#2d3748,stroke:#f56565,color:#fff
+    style OUTPUT fill:#2d3748,stroke:#4299e1,color:#fff
+    style TFIDF fill:#1a202c,stroke:#48bb78,color:#fff
+    style EMBED fill:#1a202c,stroke:#48bb78,color:#fff
+    style BART fill:#1a202c,stroke:#ed8936,color:#fff

@@ -1,10 +1,13 @@
-"""Streamlit web app for text summarization.
+"""
+Streamlit web app for text summarization.
 
 Provides a web interface for both extractive and abstractive
 summarization with ROUGE metrics and comparison.
 """
 
 import time
+import os
+from pathlib import Path
 import streamlit as st
 
 import config
@@ -13,6 +16,10 @@ from features import TFIDFExtractor, EmbeddingScorer
 from extractive import ExtractiveSummarizer
 from abstractive import AbstractiveSummarizer
 from evaluate import compute_rouge, compression_ratio
+
+
+# Get the diagrams directory path
+DIAGRAMS_DIR = Path(__file__).parent / "diagrams"
 
 
 @st.cache_resource
@@ -69,7 +76,9 @@ def main():
     )
 
     # Tabs
-    tab1, tab2, tab3 = st.tabs(["Summarize", "Compare Models", "About"])
+    tab1, tab2, tab3, tab4 = st.tabs(
+        ["Summarize", "Compare Models", "Architecture", "About"]
+    )
 
     # TAB 1: Summarize
     with tab1:
@@ -267,8 +276,67 @@ def main():
                 else:
                     st.error("Model not available")
 
-    # TAB 3: About
+    # TAB 3: Architecture - Show system diagrams
     with tab3:
+        st.subheader("System Architecture")
+
+        # Check if diagrams exist
+        arch_svg = DIAGRAMS_DIR / "system_architecture.svg"
+        extract_svg = DIAGRAMS_DIR / "extractive_pipeline.svg"
+        abstract_svg = DIAGRAMS_DIR / "abstractive_pipeline.svg"
+        flow_svg = DIAGRAMS_DIR / "data_flow.svg"
+
+        # System Architecture Overview
+        if arch_svg.exists():
+            st.markdown("### 🔭 System Overview")
+            st.image(str(arch_svg), use_container_width=True)
+        else:
+            st.info("System architecture diagram not found")
+
+        # Extractive Pipeline
+        if extract_svg.exists():
+            st.markdown("### 📌 Extractive Pipeline")
+            st.markdown("""
+            **How it works:**
+            1. Split article into sentences using NLTK
+            2. Score each sentence with TF-IDF and sentence embeddings
+            3. Combine scores (50% each) and select top-K sentences
+            4. Restore original order
+            """)
+            st.image(str(extract_svg), use_container_width=True)
+        else:
+            st.info("Extractive pipeline diagram not found")
+
+        # Abstractive Pipeline
+        if abstract_svg.exists():
+            st.markdown("### ✨ Abstractive Pipeline (BART)")
+            st.markdown("""
+            **How it works:**
+            1. Tokenize article with BART tokenizer (max 1024 tokens)
+            2. Encode with 12-layer transformer encoder
+            3. Generate with beam search (beams=4, length penalty=2.0)
+            4. Decode tokens back to text
+            """)
+            st.image(str(abstract_svg), use_container_width=True)
+        else:
+            st.info("Abstractive pipeline diagram not found")
+
+        # Data Flow Sequence
+        if flow_svg.exists():
+            st.markdown("### 🔄 Data Flow Sequence")
+            st.markdown("Complete workflow from input to output:")
+            st.image(str(flow_svg), use_container_width=True)
+        else:
+            st.info("Data flow diagram not found")
+
+        # Legend
+        st.markdown("---")
+        st.caption(
+            "💡 Diagrams show the complete flow from article input to summary output"
+        )
+
+    # TAB 4: About
+    with tab4:
         st.subheader("About")
 
         st.markdown("""
