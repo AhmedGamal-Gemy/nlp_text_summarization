@@ -32,9 +32,10 @@ from typing import List
 
 import numpy as np
 
-import config
-import preprocessing
-from features import TFIDFExtractor, EmbeddingScorer
+# Local imports (from src package)
+from . import config
+from . import preprocessing
+from .features import TFIDFExtractor, EmbeddingScorer
 
 
 def normalize(scores: np.ndarray) -> np.ndarray:

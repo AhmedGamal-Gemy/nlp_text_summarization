@@ -32,7 +32,8 @@ from typing import List
 import torch
 from transformers import AutoTokenizer, AutoModelForSeq2SeqLM
 
-import config
+# Local imports (from src package)
+from . import config
 
 
 class AbstractiveSummarizer:

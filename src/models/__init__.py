@@ -1,0 +1,1 @@
+# Models Package - Base interfaces for summarization models
