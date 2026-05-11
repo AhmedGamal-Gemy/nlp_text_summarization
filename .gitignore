@@ -16,8 +16,7 @@ venv/
 ENV/
 env/
 
-# Checkpoints and models
-checkpoints/
+# Model weight formats (checkpoints/ tracked)
 *.pt
 *.pth
 *.ckpt
