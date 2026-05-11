@@ -1,0 +1,196 @@
+<svg width="100%" viewBox="0 0 1200 1050" role="img" xmlns="http://www.w3.org/2000/svg">
+  <title>Data Flow Sequence Diagram</title>
+  <desc>UML-style sequence diagram showing user interaction flow with the summarization system.</desc>
+
+  <defs>
+    <!-- Arrow Markers -->
+    <marker id="arrowDefault" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M1 1L9 5L1 9" fill="#3D3D3A" stroke="#3D3D3A" stroke-width="1"/>
+    </marker>
+    <marker id="arrowBlue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M1 1L9 5L1 9" fill="#185FA5" stroke="#185FA5" stroke-width="1"/>
+    </marker>
+    <marker id="arrowOrange" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M1 1L9 5L1 9" fill="#E67E22" stroke="#E67E22" stroke-width="1"/>
+    </marker>
+    <marker id="arrowGreen" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M1 1L9 5L1 9" fill="#0F6E56" stroke="#0F6E56" stroke-width="1"/>
+    </marker>
+  </defs>
+
+  <!-- Background & Grid -->
+  <rect width="1200" height="1050" fill="#FAFAF8"/>
+  <pattern id="grid" width="25" height="25" patternUnits="userSpaceOnUse">
+    <path d="M 25 0 L 0 0 0 25" fill="none" stroke="#F0F0F0" stroke-width="0.5"/>
+  </pattern>
+  <rect width="1200" height="1050" fill="url(#grid)"/>
+
+  <!-- Title -->
+  <text x="600" y="45" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="20" font-weight="600" fill="#1A1A18">System Data Flow Sequence Diagram</text>
+  <text x="600" y="68" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="13" fill="#5F5E5A">Interaction flow between User, App, and NLP Modules</text>
+
+  <!-- ════════════════════════════════════════
+       LAYER 1: ALT FRAME BACKGROUND
+  ════════════════════════════════════════ -->
+  <rect x="50" y="220" width="1100" height="680" fill="#FFFFFF" stroke="#D0D0D0" stroke-width="1" rx="8"/>
+  <text x="65" y="245" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-weight="bold" fill="#5F5E5A" font-size="12">ALT (Model Selection)</text>
+  
+  <!-- Internal Dividers -->
+  <line x1="50" y1="420" x2="1150" y2="420" stroke="#D0D0D0" stroke-width="1"/>
+  <text x="1155" y="424" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" fill="#5F5E5A" font-size="11" font-weight="bold">[else]</text>
+  
+  <line x1="50" y1="640" x2="1150" y2="640" stroke="#D0D0D0" stroke-width="1"/>
+  <text x="1155" y="644" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" fill="#5F5E5A" font-size="11" font-weight="bold">[else]</text>
+
+  <!-- ════════════════════════════════════════
+       LAYER 2: LIFELINES (Drawn over frame)
+  ════════════════════════════════════════ -->
+  <g stroke="#D0D0D0" stroke-width="1.5" stroke-dasharray="5,4">
+    <line x1="120" y1="150" x2="120" y2="950"/>
+    <line x1="280" y1="150" x2="280" y2="950"/>
+    <line x1="440" y1="150" x2="440" y2="950"/>
+    <line x1="580" y1="150" x2="580" y2="950"/>
+    <line x1="720" y1="150" x2="720" y2="950"/>
+    <line x1="860" y1="150" x2="860" y2="950"/>
+    <line x1="1000" y1="150" x2="1000" y2="950"/>
+  </g>
+
+  <!-- ════════════════════════════════════════
+       LAYER 3: ACTIVATION BARS
+  ════════════════════════════════════════ -->
+  <g>
+    <!-- App Initial -->
+    <rect x="272" y="170" width="16" height="60" fill="#E8E8E8" stroke="#5F5E5A" stroke-width="0.5" rx="2"/>
+    
+    <!-- Extractive Path -->
+    <rect x="432" y="300" width="16" height="80" fill="#E6F1FB" stroke="#185FA5" stroke-width="0.5" rx="2"/>
+    <rect x="572" y="340" width="16" height="100" fill="#E6F1FB" stroke="#185FA5" stroke-width="0.5" rx="2"/>
+    <rect x="712" y="400" width="16" height="100" fill="#E6F1FB" stroke="#185FA5" stroke-width="0.5" rx="2"/>
+    <rect x="272" y="480" width="16" height="40" fill="#E6F1FB" stroke="#185FA5" stroke-width="0.5" rx="2"/>
+
+    <!-- Abstractive Path -->
+    <rect x="852" y="480" width="16" height="140" fill="#FFF3E0" stroke="#E67E22" stroke-width="0.5" rx="2"/>
+    <rect x="272" y="580" width="16" height="60" fill="#FFF3E0" stroke="#E67E22" stroke-width="0.5" rx="2"/>
+
+    <!-- Evaluation Path -->
+    <rect x="272" y="700" width="16" height="40" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.5" rx="2"/>
+    <rect x="992" y="760" width="16" height="80" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.5" rx="2"/>
+    <rect x="272" y="860" width="16" height="40" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.5" rx="2"/>
+  </g>
+
+  <!-- ════════════════════════════════════════
+       LAYER 4: ARROWS & SELF-LOOPS
+  ════════════════════════════════════════ -->
+  <g>
+    <!-- Initial Flow -->
+    <line x1="140" y1="190" x2="272" y2="190" stroke="#3D3D3A" stroke-width="1.5" marker-end="url(#arrowDefault)"/>
+    <line x1="140" y1="220" x2="272" y2="220" stroke="#3D3D3A" stroke-width="1.5" marker-end="url(#arrowDefault)"/>
+    <path d="M 298 200 Q 305 195 312 200 T 325 200" fill="none" stroke="#3D3D3A" stroke-width="1.5" marker-end="url(#arrowDefault)"/>
+
+    <!-- Extractive Path (Blue) -->
+    <line x1="298" y1="310" x2="432" y2="310" stroke="#185FA5" stroke-width="1.5" marker-end="url(#arrowBlue)"/>
+    <line x1="432" y1="350" x2="298" y2="350" stroke="#185FA5" stroke-width="1.5" stroke-dasharray="4,2" marker-end="url(#arrowBlue)"/>
+    <line x1="298" y1="380" x2="572" y2="380" stroke="#185FA5" stroke-width="1.5" marker-end="url(#arrowBlue)"/>
+    <line x1="572" y1="420" x2="298" y2="420" stroke="#185FA5" stroke-width="1.5" stroke-dasharray="4,2" marker-end="url(#arrowBlue)"/>
+    <line x1="298" y1="450" x2="712" y2="450" stroke="#185FA5" stroke-width="1.5" marker-end="url(#arrowBlue)"/>
+    <line x1="712" y1="480" x2="298" y2="480" stroke="#185FA5" stroke-width="1.5" stroke-dasharray="4,2" marker-end="url(#arrowBlue)"/>
+    <line x1="298" y1="500" x2="120" y2="500" stroke="#185FA5" stroke-width="1.5" marker-end="url(#arrowBlue)"/>
+
+    <!-- Abstractive Path (Orange) -->
+    <line x1="298" y1="510" x2="852" y2="510" stroke="#E67E22" stroke-width="1.5" marker-end="url(#arrowOrange)"/>
+    <path d="M 878 540 Q 885 535 892 540 T 905 540" fill="none" stroke="#E67E22" stroke-width="1.5" marker-end="url(#arrowOrange)"/>
+    <line x1="852" y1="580" x2="298" y2="580" stroke="#E67E22" stroke-width="1.5" stroke-dasharray="4,2" marker-end="url(#arrowOrange)"/>
+    <line x1="298" y1="620" x2="120" y2="620" stroke="#E67E22" stroke-width="1.5" marker-end="url(#arrowOrange)"/>
+
+    <!-- Evaluation Path (Green) -->
+    <line x1="140" y1="720" x2="272" y2="720" stroke="#0F6E56" stroke-width="1.5" marker-end="url(#arrowGreen)"/>
+    <line x1="298" y1="780" x2="992" y2="780" stroke="#0F6E56" stroke-width="1.5" marker-end="url(#arrowGreen)"/>
+    <path d="M 1018 800 Q 1025 795 1032 800 T 1045 800" fill="none" stroke="#0F6E56" stroke-width="1.5" marker-end="url(#arrowGreen)"/>
+    <line x1="992" y1="840" x2="298" y2="840" stroke="#0F6E56" stroke-width="1.5" stroke-dasharray="4,2" marker-end="url(#arrowGreen)"/>
+    <line x1="298" y1="880" x2="120" y2="880" stroke="#0F6E56" stroke-width="1.5" marker-end="url(#arrowGreen)"/>
+  </g>
+
+  <!-- ════════════════════════════════════════
+       LAYER 5: LABELS
+  ════════════════════════════════════════ -->
+  <g font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="11" fill="#3D3D3A" text-anchor="middle">
+    <!-- Initial -->
+    <text x="206" y="185">1. Enter Article</text>
+    <text x="206" y="215">2. Select Model Type</text>
+    <text x="340" y="195" fill="#555577" font-size="10">3. Show Loading</text>
+
+    <!-- Extractive -->
+    <text x="365" y="305" fill="#185FA5" font-weight="500">4a. Tokenize Sentences</text>
+    <text x="365" y="345" fill="#555577">Return N sentences</text>
+    <text x="435" y="375" fill="#185FA5" font-weight="500">5a. Score Sentences</text>
+    <text x="435" y="415" fill="#555577">TF-IDF Scores</text>
+    <text x="505" y="445" fill="#185FA5" font-weight="500">6a. Compute Similarities</text>
+    <text x="505" y="485" fill="#555577">Embedding Scores</text>
+    <text x="209" y="495" fill="#185FA5" font-weight="500">Display Extractive Summary</text>
+    <text x="209" y="510" fill="#555577" font-size="9">~0.8s</text>
+
+    <!-- Abstractive -->
+    <text x="575" y="505" fill="#E67E22" font-weight="500">4b. Tokenize + Encode</text>
+    <text x="920" y="545" fill="#E67E22" font-size="10">Beam Search Loop</text>
+    <text x="575" y="575" fill="#E67E22" font-weight="500">5b. Generate Summary</text>
+    <text x="575" y="615" fill="#555577">Summary Text</text>
+    <text x="209" y="615" fill="#E67E22" font-weight="500">Display Abstractive Summary</text>
+    <text x="209" y="630" fill="#555577" font-size="9">~2.5s</text>
+
+    <!-- Evaluation -->
+    <text x="206" y="715" fill="#0F6E56" font-weight="500">Enter Reference Summary</text>
+    <text x="645" y="775" fill="#0F6E56" font-weight="500">Compute ROUGE-1/2/L</text>
+    <text x="1060" y="805" fill="#0F6E56" font-size="10">Stem + N-gram Count</text>
+    <text x="645" y="835" fill="#555577">ROUGE Scores</text>
+    <text x="209" y="875" fill="#0F6E56" font-weight="500">Display Metrics Dashboard</text>
+  </g>
+
+  <!-- ════════════════════════════════════════
+       LAYER 6: ACTOR HEADERS (Topmost)
+  ════════════════════════════════════════ -->
+  <g font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="12" text-anchor="middle">
+    <!-- Backgrounds for headers -->
+    <rect x="95" y="95" width="50" height="40" rx="25" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+    <rect x="250" y="95" width="60" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+    <rect x="410" y="95" width="60" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+    <rect x="550" y="95" width="60" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+    <rect x="690" y="95" width="60" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+    <rect x="830" y="95" width="60" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+    <rect x="970" y="95" width="60" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+
+    <!-- Icons/Text -->
+    <circle cx="120" cy="108" r="5" fill="#5F5E5A"/>
+    <path d="M114 118 L126 118 L126 123 L114 123 Z" fill="#5F5E5A"/>
+    <text x="120" y="145" font-weight="600" fill="#1A1A18">User</text>
+    
+    <text x="280" y="110" fill="#555577">🖥️</text>
+    <text x="280" y="145" font-weight="600" fill="#1A1A18">Streamlit</text>
+    
+    <text x="440" y="110" fill="#555577">⚙️</text>
+    <text x="440" y="145" font-weight="600" fill="#1A1A18">Preprocess</text>
+    
+    <text x="580" y="110" fill="#555577">📊</text>
+    <text x="580" y="145" font-weight="600" fill="#1A1A18">TF-IDF</text>
+    
+    <text x="720" y="110" fill="#555577">🧠</text>
+    <text x="720" y="145" font-weight="600" fill="#1A1A18">Embed</text>
+    
+    <text x="860" y="110" fill="#555577">🔮</text>
+    <text x="860" y="145" font-weight="600" fill="#1A1A18">BART</text>
+    
+    <text x="1000" y="110" fill="#555577">📏</text>
+    <text x="1000" y="145" font-weight="600" fill="#1A1A18">ROUGE</text>
+  </g>
+
+  <!-- Legend -->
+  <g transform="translate(50, 980)" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="12" fill="#3D3D3A">
+    <line x1="0" y1="4" x2="20" y2="4" stroke="#185FA5" stroke-width="2"/>
+    <text x="30" y="8">Extractive Path</text>
+    <line x1="140" y1="4" x2="160" y2="4" stroke="#E67E22" stroke-width="2"/>
+    <text x="170" y="8">Abstractive Path</text>
+    <line x1="290" y1="4" x2="310" y2="4" stroke="#0F6E56" stroke-width="2"/>
+    <text x="320" y="8">Evaluation Path</text>
+    <line x1="440" y1="4" x2="460" y2="4" stroke="#3D3D3A" stroke-width="1.5" stroke-dasharray="4,2"/>
+    <text x="470" y="8">Return / Response</text>
+  </g>
+</svg>

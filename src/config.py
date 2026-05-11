@@ -77,6 +77,18 @@ BART_MIN_LEN = 30
 # More beams = better quality but slower. 4 is a good balance.
 BART_BEAMS = 4
 
+# Length penalty for beam search (>1 encourages longer summaries)
+# Reduced from 2.0 to 1.0 to prevent over-compression
+BART_LENGTH_PENALTY = 1.0
+
+# Prevent repeated n-grams of this size
+# Increased from 3 to 4 to allow more natural repetition
+BART_NO_REPEAT_NGRAM = 4
+
+# Early stopping - stop when all beams finish
+# Changed to False to allow full generation
+BART_EARLY_STOPPING = False
+
 # ============================================================================
 # EVALUATION
 # ============================================================================
@@ -104,3 +116,47 @@ DATA_CACHE = Path("data/dataset_cache")
 
 # Fine-tuned model (optional - set to checkpoint path after training)
 FINETUNED_MODEL = CHECKPOINT_DIR / "bart-finetuned"
+
+
+# ============================================================================
+# RUNTIME CONFIG UPDATE (for Streamlit UI)
+# ============================================================================
+
+def update_from_ui(top_k: int = None, tfidf_weight: float = None,
+                   embed_weight: float = None, bart_max_len: int = None,
+                   bart_min_len: int = None, bart_beams: int = None,
+                   bart_length_penalty: float = None, bart_no_repeat_ngram: int = None):
+    """Update config values from Streamlit UI.
+    
+    Args:
+        top_k: Number of sentences for extractive summary
+        tfidf_weight: Weight for TF-IDF scoring (0-1)
+        embed_weight: Weight for embedding scoring (0-1)
+        bart_max_len: Maximum generated tokens
+        bart_min_len: Minimum generated tokens
+        bart_beams: Beam search width
+        bart_length_penalty: Length penalty for beam search
+        bart_no_repeat_ngram: N-gram repeat prevention size
+    """
+    global TOP_K_SENTENCES, TFIDF_WEIGHT, EMBED_WEIGHT
+    global BART_MAX_LEN, BART_MIN_LEN, BART_BEAMS
+    global BART_LENGTH_PENALTY, BART_NO_REPEAT_NGRAM
+    
+    if top_k is not None:
+        TOP_K_SENTENCES = top_k
+    if tfidf_weight is not None:
+        TFIDF_WEIGHT = tfidf_weight
+        EMBED_WEIGHT = 1.0 - tfidf_weight  # Keep weights summing to 1.0
+    if embed_weight is not None and tfidf_weight is None:
+        EMBED_WEIGHT = embed_weight
+        TFIDF_WEIGHT = 1.0 - embed_weight
+    if bart_max_len is not None:
+        BART_MAX_LEN = bart_max_len
+    if bart_min_len is not None:
+        BART_MIN_LEN = bart_min_len
+    if bart_beams is not None:
+        BART_BEAMS = bart_beams
+    if bart_length_penalty is not None:
+        BART_LENGTH_PENALTY = bart_length_penalty
+    if bart_no_repeat_ngram is not None:
+        BART_NO_REPEAT_NGRAM = bart_no_repeat_ngram

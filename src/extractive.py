@@ -113,17 +113,29 @@ class ExtractiveSummarizer:
         Returns:
             Selected sentences joined together, in original order.
         """
-        top_k = top_k or config.TOP_K_SENTENCES
-
         # Step 1: Split into sentences
         sentences = preprocessing.sentence_tokenize(article)
+
+        # Adaptive top_k: scale based on article length
+        if top_k is None:
+            num_sentences = len(sentences)
+            if num_sentences <= 4:
+                top_k = 1
+            elif num_sentences <= 8:
+                top_k = 2
+            elif num_sentences <= 15:
+                top_k = 3
+            else:
+                top_k = min(5, num_sentences // 3)
 
         # Edge case: article has fewer sentences than requested
         if len(sentences) <= top_k:
             return " ".join(sentences)
 
         # Step 2: Score with TF-IDF
-        # What does this tell us? Which sentences have important keywords
+        # Fit TF-IDF on the article's own sentences (document-specific scoring)
+        # This ensures we capture what's important in THIS article, not a generic corpus
+        self.tfidf.fit(sentences)
         tfidf_scores = self.tfidf.score_sentences(sentences)
         tfidf_scores = normalize(tfidf_scores)
 
@@ -133,8 +145,7 @@ class ExtractiveSummarizer:
         embed_scores = normalize(embed_scores)
 
         # Step 4: Combine scores
-        # Weight by config (default: 50% TF-IDF + 50% embedding)
-        # This balances keyword importance vs semantic relevance
+        # Use config weights (can be updated from Streamlit UI)
         final_scores = (
             config.TFIDF_WEIGHT * tfidf_scores + config.EMBED_WEIGHT * embed_scores
         )

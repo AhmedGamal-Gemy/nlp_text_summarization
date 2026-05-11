@@ -176,39 +176,35 @@ class EmbeddingScorer:
         """
         return self.model.encode(texts)
 
-    def score_sentences(self, sentences: List[str], document: str) -> np.ndarray:
+    def score_sentences(self, sentences: List[str], document: str = None) -> np.ndarray:
         """
-        Score sentences by similarity to full document.
+        Score sentences by similarity to document's main topic.
 
-        This answers: "How well does this sentence represent the document?"
+        Uses the average of all sentence embeddings as the "main topic"
+        reference. This filters out off-topic sentences naturally.
 
         Algorithm:
-        1. Encode entire document → 1 embedding (384 dims)
-        2. Encode each sentence → N embeddings (384 dims each)
-        3. Compute cosine similarity between each sentence and document
+        1. Encode each sentence → N embeddings
+        2. Compute average embedding (represents main topic)
+        3. Compare each sentence to the average
 
-        Cosine similarity:
-        - 1.0 = identical meaning
-        - 0.0 = completely different
-        - -1.0 = opposite meaning
-
-        Sentences with high similarity capture the main topic!
+        This is better than comparing to the full document text because
+        the full document might contain off-topic paragraphs.
 
         Args:
             sentences: List of sentences to score.
-            document: Full document text.
+            document: Unused (kept for API compatibility).
 
         Returns:
             Array of similarity scores (0-1, higher = more representative).
         """
-        # Step 1: Encode the full document
-        doc_embedding = self.model.encode([document])
-
-        # Step 2: Encode all sentences
+        # Step 1: Encode all sentences
         sent_embeddings = self.model.encode(sentences)
 
-        # Step 3: Cosine similarity between each sentence and document
-        # For each sentence: how similar is it to the whole document?
+        # Step 2: Compute average embedding (main topic)
+        doc_embedding = sent_embeddings.mean(axis=0, keepdims=True)
+
+        # Step 3: Cosine similarity between each sentence and main topic
         similarities = cosine_similarity(sent_embeddings, doc_embedding).flatten()
 
         return similarities

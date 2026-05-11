@@ -1,0 +1,198 @@
+<svg width="100%" viewBox="0 0 680 980" role="img" xmlns="http://www.w3.org/2000/svg">
+  <title>Extractive Summarization Pipeline Deep Dive</title>
+  <desc>Vertical flowchart showing the 6-step extractive summarization pipeline.</desc>
+
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M2 1L8 5L2 9" fill="none" stroke="#3D3D3A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+    </marker>
+    <linearGradient id="blueGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#185FA5"/>
+      <stop offset="100%" style="stop-color:#378ADD"/>
+    </linearGradient>
+    <linearGradient id="purpleGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#6A11CB"/>
+      <stop offset="100%" style="stop-color:#9B59B6"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="680" height="980" fill="#FAFAF8"/>
+
+  <!-- ── Title ── -->
+  <text x="340" y="32" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="17" font-weight="600" fill="#1A1A18">Extractive Summarization Pipeline</text>
+  <text x="340" y="52" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="12" fill="#5F5E5A">Step-by-step deep dive</text>
+
+  <!-- ════════════════════════════════════════
+       STEP 1 — INPUT
+  ════════════════════════════════════════ -->
+  <text x="340" y="84" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="11" font-weight="500" fill="#5F5E5A" letter-spacing="0.5">STEP 1</text>
+
+  <g>
+    <rect x="218" y="92" width="244" height="60" rx="8" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.5"/>
+    <text x="340" y="118" text-anchor="middle" dominant-baseline="central" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="14" font-weight="500" fill="#444441">Article Text</text>
+    <text x="340" y="138" text-anchor="middle" dominant-baseline="central" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="12" fill="#5F5E5A">~700 words · raw input</text>
+  </g>
+
+  <!-- Arrow 1→2 -->
+  <line x1="340" y1="152" x2="340" y2="170" stroke="#3D3D3A" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+  <!-- ════════════════════════════════════════
+       STEP 2 — SENTENCE TOKENIZATION
+  ════════════════════════════════════════ -->
+  <text x="340" y="186" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="11" font-weight="500" fill="#5F5E5A" letter-spacing="0.5">STEP 2</text>
+
+  <g>
+    <rect x="218" y="194" width="244" height="60" rx="8" fill="#E6F1FB" stroke="#185FA5" stroke-width="0.5"/>
+    <text x="340" y="218" text-anchor="middle" dominant-baseline="central" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="14" font-weight="500" fill="#0C447C">Sentence Tokenizer</text>
+    <text x="340" y="238" text-anchor="middle" dominant-baseline="central" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="12" fill="#185FA5">NLTK · splits article into N sentences</text>
+  </g>
+
+  <!-- Sentence chips -->
+  <g font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="10.5">
+    <!-- Row 1 -->
+    <rect x="60"  y="268" width="148" height="24" rx="5" fill="#E6F1FB" stroke="#378ADD" stroke-width="0.5"/>
+    <text x="134" y="280" text-anchor="middle" dominant-baseline="central" fill="#0C447C">S0 · sentence one</text>
+    <rect x="216" y="268" width="148" height="24" rx="5" fill="#E6F1FB" stroke="#378ADD" stroke-width="0.5"/>
+    <text x="290" y="280" text-anchor="middle" dominant-baseline="central" fill="#0C447C">S1 · sentence two</text>
+    <rect x="372" y="268" width="148" height="24" rx="5" fill="#E6F1FB" stroke="#378ADD" stroke-width="0.5"/>
+    <text x="446" y="280" text-anchor="middle" dominant-baseline="central" fill="#0C447C">S2 · sentence three</text>
+    <!-- Row 2 -->
+    <rect x="60"  y="298" width="148" height="24" rx="5" fill="#E6F1FB" stroke="#378ADD" stroke-width="0.5"/>
+    <text x="134" y="310" text-anchor="middle" dominant-baseline="central" fill="#0C447C">S3 · sentence four</text>
+    <rect x="216" y="298" width="148" height="24" rx="5" fill="#E6F1FB" stroke="#378ADD" stroke-width="0.5"/>
+    <text x="290" y="310" text-anchor="middle" dominant-baseline="central" fill="#0C447C">S4 · sentence five</text>
+    <rect x="372" y="298" width="148" height="24" rx="5" fill="#E6F1FB" stroke="#378ADD" stroke-width="0.5"/>
+    <text x="446" y="310" text-anchor="middle" dominant-baseline="central" fill="#0C447C">S5 · sentence six</text>
+  </g>
+
+  <!-- Fork: down then split left/right -->
+  <line x1="340" y1="322" x2="340" y2="344" stroke="#3D3D3A" stroke-width="1.5"/>
+  <line x1="170" y1="344" x2="510" y2="344" stroke="#3D3D3A" stroke-width="1.5"/>
+  <line x1="170" y1="344" x2="170" y2="366" stroke="#185FA5" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <line x1="510" y1="344" x2="510" y2="366" stroke="#6A11CB" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+  <!-- ════════════════════════════════════════
+       STEP 3 — DUAL SCORING (two columns)
+  ════════════════════════════════════════ -->
+  <text x="340" y="362" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="11" font-weight="500" fill="#5F5E5A" letter-spacing="0.5">STEP 3 · DUAL SCORING</text>
+
+  <!-- ── TF-IDF column (left) ── -->
+  <g font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif">
+    <rect x="44" y="370" width="252" height="32" rx="8" fill="url(#blueGrad)"/>
+    <text x="170" y="386" text-anchor="middle" dominant-baseline="central" font-size="13" font-weight="500" fill="white">TF-IDF Scoring</text>
+
+    <rect x="44" y="410" width="252" height="44" rx="6" fill="#E6F1FB" stroke="#185FA5" stroke-width="0.5"/>
+    <text x="170" y="428" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="500" fill="#0C447C">Fit TfidfVectorizer</text>
+    <text x="170" y="446" text-anchor="middle" dominant-baseline="central" font-size="11" fill="#185FA5">on all sentences</text>
+
+    <line x1="170" y1="454" x2="170" y2="462" stroke="#185FA5" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+    <rect x="44" y="462" width="252" height="44" rx="6" fill="#E6F1FB" stroke="#185FA5" stroke-width="0.5"/>
+    <text x="170" y="480" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="500" fill="#0C447C">Calculate TF × IDF</text>
+    <text x="170" y="498" text-anchor="middle" dominant-baseline="central" font-size="11" fill="#185FA5">term freq × inverse doc freq</text>
+
+    <line x1="170" y1="506" x2="170" y2="514" stroke="#185FA5" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+    <rect x="44" y="514" width="252" height="44" rx="6" fill="#E6F1FB" stroke="#185FA5" stroke-width="0.5"/>
+    <text x="170" y="532" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="500" fill="#0C447C">Sum scores per sentence</text>
+    <text x="170" y="550" text-anchor="middle" dominant-baseline="central" font-size="11" fill="#185FA5">one score per sentence</text>
+
+    <line x1="170" y1="558" x2="170" y2="566" stroke="#185FA5" stroke-width="1.5" marker-end="url(#arrow)"/>
+    <rect x="44" y="566" width="252" height="36" rx="6" fill="#0C447C"/>
+    <text x="170" y="581" text-anchor="middle" dominant-baseline="central" font-size="10.5" font-weight="500" fill="#B5D4F4">TF-IDF Scores</text>
+    <text x="170" y="596" text-anchor="middle" dominant-baseline="central" font-size="10" fill="#7FB8EE">[0.94, 0.75, 0.85, 0.64, 1.00, 0.00]</text>
+  </g>
+
+  <!-- ── Embedding column (right) ── -->
+  <g font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif">
+    <rect x="384" y="370" width="252" height="32" rx="8" fill="url(#purpleGrad)"/>
+    <text x="510" y="386" text-anchor="middle" dominant-baseline="central" font-size="13" font-weight="500" fill="white">Embedding Scoring</text>
+
+    <rect x="384" y="410" width="252" height="44" rx="6" fill="#EDE7FF" stroke="#6A11CB" stroke-width="0.5"/>
+    <text x="510" y="428" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="500" fill="#3A0070">Load all-MiniLM-L6-v2</text>
+    <text x="510" y="446" text-anchor="middle" dominant-baseline="central" font-size="11" fill="#6A11CB">sentence-transformers model</text>
+
+    <line x1="510" y1="454" x2="510" y2="462" stroke="#6A11CB" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+    <rect x="384" y="462" width="252" height="44" rx="6" fill="#EDE7FF" stroke="#6A11CB" stroke-width="0.5"/>
+    <text x="510" y="480" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="500" fill="#3A0070">Encode sentences → vectors</text>
+    <text x="510" y="498" text-anchor="middle" dominant-baseline="central" font-size="11" fill="#6A11CB">384-dim embedding per sentence</text>
+
+    <line x1="510" y1="506" x2="510" y2="514" stroke="#6A11CB" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+    <rect x="384" y="514" width="252" height="44" rx="6" fill="#EDE7FF" stroke="#6A11CB" stroke-width="0.5"/>
+    <text x="510" y="532" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="500" fill="#3A0070">Cosine sim vs topic vector</text>
+    <text x="510" y="550" text-anchor="middle" dominant-baseline="central" font-size="11" fill="#6A11CB">avg embedding = doc topic</text>
+
+    <line x1="510" y1="558" x2="510" y2="566" stroke="#6A11CB" stroke-width="1.5" marker-end="url(#arrow)"/>
+    <rect x="384" y="566" width="252" height="36" rx="6" fill="#3A0070"/>
+    <text x="510" y="581" text-anchor="middle" dominant-baseline="central" font-size="10.5" font-weight="500" fill="#D4B3FF">Embedding Scores</text>
+    <text x="510" y="596" text-anchor="middle" dominant-baseline="central" font-size="10" fill="#B58BEE">[0.83, 0.00, 0.74, 0.09, 1.00, 0.31]</text>
+  </g>
+
+  <!-- Join branches back to center -->
+  <line x1="170" y1="602" x2="170" y2="622" stroke="#3D3D3A" stroke-width="1.5"/>
+  <line x1="510" y1="602" x2="510" y2="622" stroke="#3D3D3A" stroke-width="1.5"/>
+  <line x1="170" y1="622" x2="510" y2="622" stroke="#3D3D3A" stroke-width="1.5"/>
+  <line x1="340" y1="622" x2="340" y2="640" stroke="#3D3D3A" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+  <!-- ════════════════════════════════════════
+       STEP 4 — COMBINE SCORES
+  ════════════════════════════════════════ -->
+  <text x="340" y="656" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="11" font-weight="500" fill="#5F5E5A" letter-spacing="0.5">STEP 4</text>
+
+  <g>
+    <rect x="150" y="664" width="380" height="60" rx="8" fill="#FFF8E6" stroke="#B07800" stroke-width="0.5"/>
+    <text x="340" y="686" text-anchor="middle" dominant-baseline="central" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="14" font-weight="500" fill="#7A5000">Score Combiner</text>
+    <text x="340" y="708" text-anchor="middle" dominant-baseline="central" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="12" fill="#B07800">0.3 × TF-IDF + 0.7 × Embedding</text>
+  </g>
+
+  <!-- Arrow 4→5 -->
+  <line x1="340" y1="724" x2="340" y2="742" stroke="#3D3D3A" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+  <!-- ════════════════════════════════════════
+       STEP 5 — TOP-K SELECTOR
+  ════════════════════════════════════════ -->
+  <text x="340" y="758" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="11" font-weight="500" fill="#5F5E5A" letter-spacing="0.5">STEP 5</text>
+
+  <g>
+    <rect x="150" y="766" width="380" height="60" rx="8" fill="#E6F1FB" stroke="#185FA5" stroke-width="0.5"/>
+    <text x="340" y="788" text-anchor="middle" dominant-baseline="central" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="14" font-weight="500" fill="#0C447C">Top-K Selector</text>
+    <text x="340" y="808" text-anchor="middle" dominant-baseline="central" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="12" fill="#185FA5">Rank → pick top 3 → restore original order</text>
+  </g>
+
+  <!-- Selected sentence chips -->
+  <g font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="10.5">
+    <rect x="110" y="834" width="122" height="22" rx="5" fill="#E6F1FB" stroke="#378ADD" stroke-width="0.5"/>
+    <text x="171" y="845" text-anchor="middle" dominant-baseline="central" fill="#0C447C">✓ S0 · 0.863</text>
+    <rect x="279" y="834" width="122" height="22" rx="5" fill="#E6F1FB" stroke="#378ADD" stroke-width="0.5"/>
+    <text x="340" y="845" text-anchor="middle" dominant-baseline="central" fill="#0C447C">✓ S2 · 0.773</text>
+    <rect x="448" y="834" width="122" height="22" rx="5" fill="#E6F1FB" stroke="#378ADD" stroke-width="0.5"/>
+    <text x="509" y="845" text-anchor="middle" dominant-baseline="central" fill="#0C447C">✓ S4 · 1.000</text>
+  </g>
+
+  <!-- Arrow 5→6 -->
+  <line x1="340" y1="856" x2="340" y2="870" stroke="#3D3D3A" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+  <!-- ════════════════════════════════════════
+       STEP 6 — OUTPUT
+  ════════════════════════════════════════ -->
+  <text x="340" y="885" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="11" font-weight="500" fill="#5F5E5A" letter-spacing="0.5">STEP 6</text>
+
+  <g>
+    <rect x="150" y="892" width="380" height="60" rx="8" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.5"/>
+    <text x="340" y="916" text-anchor="middle" dominant-baseline="central" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="14" font-weight="500" fill="#085041">Extractive Summary</text>
+    <text x="340" y="936" text-anchor="middle" dominant-baseline="central" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="12" fill="#0F6E56">Compression 37.5% · 3 sentences · ~0.84 s</text>
+  </g>
+
+  <!-- ── Legend (moved lower to avoid overlap) ── -->
+  <g font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="12" fill="#3D3D3A">
+    <rect x="14" y="950" width="11" height="11" rx="2" fill="#B5D4F4" stroke="#185FA5" stroke-width="0.5"/>
+    <text x="30" y="960">TF-IDF path</text>
+    <rect x="14" y="968" width="11" height="11" rx="2" fill="#D4B3FF" stroke="#6A11CB" stroke-width="0.5"/>
+    <text x="30" y="978">Embedding path</text>
+    <rect x="14" y="986" width="11" height="11" rx="2" fill="#9FE1CB" stroke="#0F6E56" stroke-width="0.5"/>
+    <text x="30" y="996">Output</text>
+  </g>
+</svg>

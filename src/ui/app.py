@@ -12,110 +12,76 @@ import time
 from pathlib import Path
 import streamlit as st
 
-# Local imports (from src package)
-from .. import config
-from .. import preprocessing
-from ..features import TFIDFExtractor, EmbeddingScorer
-from ..extractive import ExtractiveSummarizer
-from ..abstractive import AbstractiveSummarizer
-from ..services.evaluation import compute_rouge, compression_ratio
-
-
-# Get the diagrams directory path (from project root, not src/ui)
+# Only lightweight imports at startup
 PROJECT_ROOT = Path(__file__).parent.parent.parent
 DIAGRAMS_DIR = PROJECT_ROOT / "diagrams"
 
 
+# Lazy import helper
+def _import_config():
+    from .. import config
+    return config
+
+def _import_preprocessing():
+    from .. import preprocessing
+    return preprocessing
+
+def _import_features():
+    from ..features import TFIDFExtractor, EmbeddingScorer
+    return TFIDFExtractor, EmbeddingScorer
+
+def _import_extractive():
+    from ..extractive import ExtractiveSummarizer
+    return ExtractiveSummarizer
+
+def _import_abstractive():
+    from ..abstractive import AbstractiveSummarizer
+    return AbstractiveSummarizer
+
+def _import_evaluation():
+    from ..services.evaluation import compute_rouge, compression_ratio, compute_bertscore
+    return compute_rouge, compression_ratio, compute_bertscore
+
+
 # ============================================================================
-# CUSTOM CSS - Professional Theme
+# CUSTOM CSS
 # ============================================================================
 
 def inject_custom_css():
-    """Inject custom CSS for professional styling."""
     st.markdown("""
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
-
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
         .stApp { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; }
-
-        .main .block-container {
-            padding-top: 2rem;
-            padding-bottom: 3rem;
-            max-width: 1200px;
-        }
-
-        h1 {
-            font-size: 2.25rem !important;
-            font-weight: 700 !important;
-            letter-spacing: -0.02em;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
+        .main .block-container { padding-top: 2rem; padding-bottom: 3rem; max-width: 1200px; }
+        h1 { font-size: 2.25rem !important; font-weight: 700 !important; letter-spacing: -0.02em; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
         h2, h3 { font-weight: 600 !important; letter-spacing: -0.01em; }
-
-        .summary-box {
-            background: #f8fafc;
-            border-left: 4px solid #667eea;
-            border-radius: 8px;
-            padding: 1.25rem;
-            margin: 1rem 0;
-            font-size: 1rem;
-            line-height: 1.7;
-        }
-
-        .model-badge {
-            display: inline-block;
-            padding: 0.25rem 0.75rem;
-            border-radius: 9999px;
-            font-size: 0.75rem;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            margin-bottom: 0.5rem;
-        }
-
+        .summary-box { background: #f8fafc; border-left: 4px solid #667eea; border-radius: 8px; padding: 1.25rem; margin: 1rem 0; font-size: 1rem; line-height: 1.7; }
+        .model-badge { display: inline-block; padding: 0.25rem 0.75rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.5rem; }
         .badge-extractive { background: #dbeafe; color: #1e40af; }
         .badge-abstractive { background: #fef3c7; color: #92400e; }
         .badge-finetuned { background: #d1fae5; color: #065f46; }
-
         section[data-testid="stSidebar"] { background: #1e293b; }
         section[data-testid="stSidebar"] * { color: #f8fafc !important; }
-
-        .stButton > button {
-            border-radius: 8px;
-            font-weight: 600;
-            padding: 0.75rem 1.5rem;
-            transition: all 0.2s ease;
-        }
-
-        textarea {
-            border-radius: 8px !important;
-            border: 1px solid #e2e8f0 !important;
-        }
-
+        .stButton > button { border-radius: 8px; font-weight: 600; padding: 0.75rem 1.5rem; }
+        textarea { border-radius: 8px !important; border: 1px solid #e2e8f0 !important; }
         .stTabs [data-baseweb="tab-list"] { gap: 8px; }
         .stTabs [data-baseweb="tab"] { border-radius: 8px 8px 0 0; padding: 0.75rem 1.5rem; }
-
-        .footer {
-            text-align: center;
-            padding: 2rem 0;
-            color: #64748b;
-            font-size: 0.875rem;
-        }
+        .footer { text-align: center; padding: 2rem 0; color: #64748b; font-size: 0.875rem; }
     </style>
     """, unsafe_allow_html=True)
 
 
 # ============================================================================
-# MODEL LOADING
+# MODEL LOADING (lazy imports inside)
 # ============================================================================
 
 @st.cache_resource
 def load_extractive():
-    """Load extractive summarizer models."""
+    config = _import_config()
+    preprocessing = _import_preprocessing()
+    TFIDFExtractor, EmbeddingScorer = _import_features()
+    ExtractiveSummarizer = _import_extractive()
+
     preprocessing.download_nltk_resources()
     tfidf = TFIDFExtractor()
     embedder = EmbeddingScorer()
@@ -130,8 +96,8 @@ def load_extractive():
 
 @st.cache_resource
 def load_abstractive():
-    """Load pretrained abstractive summarizer model."""
     try:
+        AbstractiveSummarizer = _import_abstractive()
         return AbstractiveSummarizer()
     except Exception as e:
         st.error(f"Failed to load BART model: {e}")
@@ -140,7 +106,7 @@ def load_abstractive():
 
 @st.cache_resource
 def load_finetuned():
-    """Load fine-tuned BART model from checkpoints."""
+    config = _import_config()
     finetuned_path = PROJECT_ROOT / "checkpoints" / "bart-finetuned"
     if not finetuned_path.exists():
         return None
@@ -156,20 +122,8 @@ def load_finetuned():
                 self.model = model
 
             def summarize(self, text: str) -> str:
-                inputs = self.tokenizer(
-                    "summarize: " + text,
-                    return_tensors="pt",
-                    max_length=1024,
-                    truncation=True,
-                ).to(config.DEVICE)
-                outputs = self.model.generate(
-                    inputs["input_ids"],
-                    max_length=config.BART_MAX_LEN,
-                    min_length=config.BART_MIN_LEN,
-                    num_beams=config.BART_BEAMS,
-                    length_penalty=2.0,
-                    no_repeat_ngram_size=3,
-                )
+                inputs = self.tokenizer("summarize: " + text, return_tensors="pt", max_length=1024, truncation=True).to(config.DEVICE)
+                outputs = self.model.generate(inputs["input_ids"], max_length=config.BART_MAX_LEN, min_length=config.BART_MIN_LEN, num_beams=config.BART_BEAMS, length_penalty=config.BART_LENGTH_PENALTY, no_repeat_ngram_size=config.BART_NO_REPEAT_NGRAM, early_stopping=config.BART_EARLY_STOPPING)
                 return self.tokenizer.decode(outputs[0], skip_special_tokens=True)
 
         return FinetunedSummarizer(tokenizer, model)
@@ -183,22 +137,19 @@ def load_finetuned():
 # ============================================================================
 
 def display_summary_box(text: str, model_type: str):
-    """Display a styled summary output box."""
     badges = {
         "extractive": ("badge-extractive", "Extractive"),
         "abstractive": ("badge-abstractive", "Abstractive (BART)"),
         "finetuned": ("badge-finetuned", "Fine-tuned BART"),
     }
     badge_class, badge_text = badges.get(model_type, ("badge-extractive", "Unknown"))
-
     st.markdown(f"""
     <span class="model-badge {badge_class}">{badge_text}</span>
     <div class="summary-box">{text}</div>
     """, unsafe_allow_html=True)
 
 
-def display_results_metrics(words: int, compression: float, time_sec: float, rouge: dict = None):
-    """Display result metrics in a nice layout."""
+def display_results_metrics(words: int, compression: float, time_sec: float, rouge: dict = None, bertscore: dict = None):
     col1, col2, col3 = st.columns(3)
     with col1:
         st.metric("Words", words)
@@ -218,9 +169,21 @@ def display_results_metrics(words: int, compression: float, time_sec: float, rou
         with rcol3:
             st.metric("ROUGE-L", f"{rouge['rougeL']:.3f}")
 
+    if bertscore:
+        st.markdown("---")
+        st.markdown("**BERTScore (Semantic Similarity)**")
+        bcol1, bcol2, bcol3 = st.columns(3)
+        with bcol1:
+            st.metric("Precision", f"{bertscore['precision']:.3f}")
+        with bcol2:
+            st.metric("Recall", f"{bertscore['recall']:.3f}")
+        with bcol3:
+            st.metric("F1", f"{bertscore['f1']:.3f}")
+
 
 def run_model_and_display(summarizer, article: str, reference: str, model_type: str):
-    """Run a single model and display results."""
+    compute_rouge, compression_ratio, compute_bertscore = _import_evaluation()
+    
     with st.spinner(f"Running {model_type} summarization..."):
         start = time.time()
         summary = summarizer.summarize(article)
@@ -231,7 +194,8 @@ def run_model_and_display(summarizer, article: str, reference: str, model_type: 
 
     if reference:
         rouge = compute_rouge([summary], [reference])
-        display_results_metrics(len(summary.split()), ratio, elapsed, rouge)
+        bertscore = compute_bertscore([summary], [reference])
+        display_results_metrics(len(summary.split()), ratio, elapsed, rouge, bertscore)
     else:
         display_results_metrics(len(summary.split()), ratio, elapsed)
 
@@ -241,7 +205,6 @@ def run_model_and_display(summarizer, article: str, reference: str, model_type: 
 # ============================================================================
 
 def main():
-    """Main Streamlit app."""
     st.set_page_config(
         page_title="NLP Text Summarization",
         page_icon="\U0001F4DD",
@@ -264,6 +227,34 @@ def main():
         )
 
         st.markdown("---")
+
+        # Configuration Panel
+        with st.expander("\u2699\ufe0f Configuration", expanded=False):
+            config = _import_config()
+
+            st.markdown("**Extractive Settings**")
+            top_k = st.slider("Sentences to extract", 1, 5, config.TOP_K_SENTENCES, key="top_k")
+            tfidf_w = st.slider("TF-IDF weight", 0.0, 1.0, config.TFIDF_WEIGHT, 0.1, key="tfidf_w")
+
+            st.markdown("**BART Settings**")
+            bart_max = st.slider("Max tokens", 50, 200, config.BART_MAX_LEN, 10, key="bart_max")
+            bart_min = st.slider("Min tokens", 10, 100, config.BART_MIN_LEN, 5, key="bart_min")
+            bart_beams = st.slider("Beam size", 1, 10, config.BART_BEAMS, 1, key="bart_beams")
+            bart_len_pen = st.slider("Length penalty", 0.5, 3.0, config.BART_LENGTH_PENALTY, 0.1, key="bart_len_pen")
+
+            # Apply config updates
+            config.update_from_ui(
+                top_k=top_k,
+                tfidf_weight=tfidf_w,
+                bart_max_len=bart_max,
+                bart_min_len=bart_min,
+                bart_beams=bart_beams,
+                bart_length_penalty=bart_len_pen,
+            )
+
+            st.caption(f"TF-IDF: {config.TFIDF_WEIGHT:.1f} | Embed: {config.EMBED_WEIGHT:.1f}")
+
+        st.markdown("---")
         st.markdown("### \U0001F4CA Quick Stats")
         st.markdown("""
         | Metric | Value |
@@ -283,11 +274,12 @@ def main():
     st.markdown("Generate concise summaries using **extractive** or **abstractive** approaches.")
 
     # Tabs
-    tab1, tab2, tab3, tab4 = st.tabs([
+    tab1, tab2, tab3, tab4, tab5 = st.tabs([
         "\u270F\ufe0f Summarize",
         "\U0001F4CA Compare Models",
         "\U0001F3D7\ufe0f Architecture",
         "\U0001F4D6 Documentation",
+        "\U0001F4C8 Visualizations",
     ])
 
     # ========================================================================
@@ -324,12 +316,10 @@ def main():
                     progress_bar = st.progress(0)
                     status_text = st.empty()
 
-                    # Determine which models to load
                     load_ext = model_option in ["Extractive", "Compare All"]
                     load_bart = model_option in ["Abstractive (BART)", "Compare All"]
                     load_ft = model_option in ["Fine-tuned BART", "Compare All"]
 
-                    # Load models with progress
                     if load_ext:
                         status_text.text("\U0001F4CC Loading Extractive model...")
                         progress_bar.progress(15)
@@ -351,7 +341,6 @@ def main():
                             ft_summarizer = load_finetuned()
                         progress_bar.progress(90)
 
-                    # Run based on selection
                     if model_option == "Extractive":
                         status_text.text("\U0001F50D Extracting key sentences...")
                         run_model_and_display(ext_summarizer, article, reference, "extractive")
@@ -430,7 +419,6 @@ def main():
                     ft_summarizer = load_finetuned()
                 progress_bar.progress(40)
 
-                # Run extractive
                 status_text.text("\U0001F50D Running Extractive...")
                 progress_bar.progress(60)
                 with st.spinner("\U0001F4CA Processing with TF-IDF + embeddings..."):
@@ -438,7 +426,6 @@ def main():
                     ext_summary = ext_summarizer.summarize(article_cmp)
                     ext_time = time.time() - ext_start
 
-                # Run abstractive
                 abs_summary = None
                 abs_time = 0
                 if abs_summarizer:
@@ -449,7 +436,6 @@ def main():
                         abs_summary = abs_summarizer.summarize(article_cmp)
                         abs_time = time.time() - abs_start
 
-                # Run fine-tuned
                 ft_summary = None
                 ft_time = 0
                 if ft_summarizer:
@@ -460,13 +446,14 @@ def main():
                         ft_summary = ft_summarizer.summarize(article_cmp)
                         ft_time = time.time() - ft_start
 
-                # Display comparison
                 c1, c2, c3 = st.columns(3)
 
                 with c1:
                     st.markdown("#### \U0001F4CC Extractive")
                     display_summary_box(ext_summary, "extractive")
+                    compression_ratio = _import_evaluation()[1]
                     ext_ratio = compression_ratio(article_cmp, ext_summary)
+                    compute_rouge = _import_evaluation()[0]
                     st.metric("ROUGE-1", "N/A" if not reference_cmp else f"{compute_rouge([ext_summary], [reference_cmp])['rouge1']:.3f}")
                     st.metric("Compression", f"{ext_ratio:.1%}")
                     st.metric("Time", f"{ext_time:.2f}s")
@@ -475,7 +462,9 @@ def main():
                     st.markdown("#### \u2728 Abstractive")
                     if abs_summary:
                         display_summary_box(abs_summary, "abstractive")
+                        compression_ratio = _import_evaluation()[1]
                         abs_ratio = compression_ratio(article_cmp, abs_summary)
+                        compute_rouge = _import_evaluation()[0]
                         st.metric("ROUGE-1", "N/A" if not reference_cmp else f"{compute_rouge([abs_summary], [reference_cmp])['rouge1']:.3f}")
                         st.metric("Compression", f"{abs_ratio:.1%}")
                         st.metric("Time", f"{abs_time:.2f}s")
@@ -486,7 +475,9 @@ def main():
                     st.markdown("#### \U0001F527 Fine-tuned")
                     if ft_summary:
                         display_summary_box(ft_summary, "finetuned")
+                        compression_ratio = _import_evaluation()[1]
                         ft_ratio = compression_ratio(article_cmp, ft_summary)
+                        compute_rouge = _import_evaluation()[0]
                         st.metric("ROUGE-1", "N/A" if not reference_cmp else f"{compute_rouge([ft_summary], [reference_cmp])['rouge1']:.3f}")
                         st.metric("Compression", f"{ft_ratio:.1%}")
                         st.metric("Time", f"{ft_time:.2f}s")
@@ -504,17 +495,18 @@ def main():
     # ========================================================================
     with tab3:
         st.markdown("### \U0001F3D7\ufe0f System Architecture")
-        st.markdown("Visual overview of the summarization pipeline.")
+        st.markdown("Professional diagrams showing the complete summarization pipeline.")
 
-        arch_svg = DIAGRAMS_DIR / "system_architecture.svg"
-        extract_svg = DIAGRAMS_DIR / "extractive_pipeline.svg"
-        abstract_svg = DIAGRAMS_DIR / "abstractive_pipeline.svg"
-        flow_svg = DIAGRAMS_DIR / "data_flow.svg"
-
+        # System Architecture Overview
+        arch_svg = DIAGRAMS_DIR / "nlp_summarization_architecture_v3.svg"
         if arch_svg.exists():
-            st.markdown("#### \U0001F52D System Overview")
+            st.markdown("#### \U0001F52D System Architecture Overview")
             st.image(str(arch_svg), use_container_width=True)
 
+        # Extractive + Abstractive side by side
+        extract_svg = DIAGRAMS_DIR / "Extractive Summarization Pipeline.svg"
+        abstract_svg = DIAGRAMS_DIR / "Abstractive Summarization Pipeline.svg"
+        
         col1, col2 = st.columns(2)
         with col1:
             if extract_svg.exists():
@@ -522,12 +514,26 @@ def main():
                 st.image(str(extract_svg), use_container_width=True)
         with col2:
             if abstract_svg.exists():
-                st.markdown("#### \u2728 Abstractive Pipeline")
+                st.markdown("#### \u2728 Abstractive Pipeline (BART)")
                 st.image(str(abstract_svg), use_container_width=True)
 
+        # Data Flow (full width)
+        flow_svg = DIAGRAMS_DIR / "System Data Flow Sequence Diagram.svg"
         if flow_svg.exists():
-            st.markdown("#### \U0001F504 Data Flow Sequence")
+            st.markdown("#### \U0001F504 System Data Flow Sequence Diagram")
             st.image(str(flow_svg), use_container_width=True)
+
+        # Fine-tuning Pipeline (full width)
+        train_svg = DIAGRAMS_DIR / "BART Fine-tuning Pipeline.svg"
+        if train_svg.exists():
+            st.markdown("#### \U0001F527 BART Fine-tuning Pipeline")
+            st.image(str(train_svg), use_container_width=True)
+
+        # Model Comparison Dashboard
+        compare_svg = DIAGRAMS_DIR / "Model Comparison Dashboard.svg"
+        if compare_svg.exists():
+            st.markdown("#### \U0001F4CA Model Comparison Dashboard")
+            st.image(str(compare_svg), use_container_width=True)
 
     # ========================================================================
     # TAB 4: Documentation
@@ -558,7 +564,6 @@ def main():
         - Further fine-tuned on CNN/DailyMail with our training pipeline
         - Adapts BART to our specific data distribution
         - Shows improvement over pretrained baseline
-        - **Before/after comparison** available in evaluation
         """)
 
         st.markdown("---")
@@ -591,12 +596,73 @@ def main():
         st.markdown("---")
         st.markdown("### \U0001F4DA Learn More")
         st.markdown("""
-        - **Learning Guide**: See `docs/LEARNING_GUIDE.md` for comprehensive project documentation
-        - **Team Structure**: See `docs/TEAM_STRUCTURE.md` for team roles and responsibilities
-        - **Code Comments**: All source files have extensive educational comments
+        - **Learning Guide**: See `docs/LEARNING_GUIDE.md`
+        - **Team Structure**: See `docs/TEAM_STRUCTURE.md`
+        - **Code Comments**: All source files have educational comments
         """)
 
-    # Footer
+    # ========================================================================
+    # TAB 5: Visualizations
+    # ========================================================================
+    with tab5:
+        st.markdown("### \U0001F4C8 Model Visualizations")
+        st.markdown("Charts and diagrams comparing model performance.")
+
+        viz_path = PROJECT_ROOT / "src" / "visualizations"
+        viz_path.mkdir(exist_ok=True)
+
+        # Default results
+        results = {
+            'Extractive': {
+                'rouge1': 0.290, 'rouge2': 0.099, 'rougeL': 0.188,
+                'compression': 0.189, 'time': 25.2
+            },
+            'Abstractive (BART)': {
+                'rouge1': 0.391, 'rouge2': 0.169, 'rougeL': 0.284,
+                'compression': 0.086, 'time': 504.8
+            },
+        }
+
+        # Generate charts on demand
+        if st.button("\U0001F504 Generate Charts", type="primary"):
+            with st.spinner("Generating visualizations..."):
+                from src.visualization import SummarizationVisualizer
+                viz = SummarizationVisualizer(output_dir=str(viz_path))
+                viz.generate_all_charts(results)
+            st.success("Charts generated!")
+
+        # Display existing charts
+        col1, col2 = st.columns(2)
+        
+        with col1:
+            rouge_chart = viz_path / "rouge_comparison.png"
+            if rouge_chart.exists():
+                st.markdown("**ROUGE Score Comparison**")
+                st.image(str(rouge_chart), use_container_width=True)
+            
+            radar_chart = viz_path / "performance_radar.png"
+            if radar_chart.exists():
+                st.markdown("**Performance Radar**")
+                st.image(str(radar_chart), use_container_width=True)
+        
+        with col2:
+            comp_chart = viz_path / "compression_comparison.png"
+            if comp_chart.exists():
+                st.markdown("**Compression Ratio**")
+                st.image(str(comp_chart), use_container_width=True)
+
+        # Word frequency analysis
+        st.markdown("---")
+        st.markdown("### \U0001F524 Word Frequency Analysis")
+        
+        freq_text = st.text_area("Enter text to analyze word frequency:", height=100, placeholder="Paste article text here...")
+        if st.button("\U0001F4CA Analyze Words"):
+            if freq_text:
+                from src.visualization import SummarizationVisualizer
+                viz = SummarizationVisualizer(output_dir=str(viz_path))
+                path = viz.plot_word_frequency(freq_text)
+                st.image(str(path), use_container_width=True)
+
     st.markdown("---")
     st.markdown('<div class="footer">Built with Streamlit | Powered by BART & TF-IDF | NLP Text Summarization System</div>', unsafe_allow_html=True)
 

@@ -1,0 +1,194 @@
+<svg width="100%" viewBox="0 0 680 1150" role="img" xmlns="http://www.w3.org/2000/svg">
+  <title>BART Fine-tuning Training Pipeline</title>
+  <desc>Technical flowchart showing the BART fine-tuning pipeline: data preparation, model initialization, the training loop with loss minimization, evaluation, and final output.</desc>
+
+  <defs>
+    <!-- Arrow Marker -->
+    <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M2 1L8 5L2 9" fill="none" stroke="#3D3D3A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+    </marker>
+    <marker id="arrowCyan" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M2 1L8 5L2 9" fill="none" stroke="#185FA5" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+    </marker>
+    <marker id="arrowMagenta" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M2 1L8 5L2 9" fill="none" stroke="#E67E22" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+    </marker>
+    <marker id="arrowGreen" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M2 1L8 5L2 9" fill="none" stroke="#0F6E56" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+    </marker>
+
+    <!-- Gradients -->
+    <linearGradient id="blueGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#185FA5"/>
+      <stop offset="100%" style="stop-color:#378ADD"/>
+    </linearGradient>
+    <linearGradient id="orangeGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#E67E22"/>
+      <stop offset="100%" style="stop-color:#F1C40F"/>
+    </linearGradient>
+    <linearGradient id="greenGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#2ECC71"/>
+      <stop offset="100%" style="stop-color:#0F6E56"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="680" height="1150" fill="#FAFAF8"/>
+
+  <!-- ── Title ── -->
+  <text x="340" y="40" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="18" font-weight="600" fill="#1A1A18">BART Fine-tuning Pipeline</text>
+  <text x="340" y="62" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="13" fill="#5F5E5A">Supervised Training Loop</text>
+
+  <!-- ════════════════════════════════════════
+       STEP 1 — DATA PREPARATION
+  ════════════════════════════════════════ -->
+  <text x="340" y="100" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="11" font-weight="500" fill="#5F5E5A" letter-spacing="0.5">STEP 1</text>
+
+  <g>
+    <rect x="150" y="110" width="380" height="110" rx="8" fill="#FFF8E6" stroke="#B07800" stroke-width="0.5"/>
+    <text x="340" y="135" text-anchor="middle" dominant-baseline="central" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="14" font-weight="500" fill="#7A5000">Data Preparation</text>
+    
+    <!-- Sub-boxes for Data Details -->
+    <g transform="translate(170, 150)">
+      <!-- Split -->
+      <rect x="0" y="0" width="100" height="45" rx="4" fill="#FFFFFF" stroke="#B07800" stroke-width="0.5"/>
+      <text x="50" y="20" text-anchor="middle" font-family="-apple-system, sans-serif" font-size="10" fill="#555577">Train</text>
+      <text x="50" y="35" text-anchor="middle" font-family="-apple-system, sans-serif" font-size="12" font-weight="bold" fill="#B07800">80%</text>
+      
+      <!-- Val -->
+      <rect x="110" y="0" width="60" height="45" rx="4" fill="#FFFFFF" stroke="#B07800" stroke-width="0.5"/>
+      <text x="140" y="20" text-anchor="middle" font-family="-apple-system, sans-serif" font-size="10" fill="#555577">Val</text>
+      <text x="140" y="35" text-anchor="middle" font-family="-apple-system, sans-serif" font-size="12" font-weight="bold" fill="#B07800">10%</text>
+
+      <!-- Test -->
+      <rect x="180" y="0" width="60" height="45" rx="4" fill="#FFFFFF" stroke="#B07800" stroke-width="0.5"/>
+      <text x="210" y="20" text-anchor="middle" font-family="-apple-system, sans-serif" font-size="10" fill="#555577">Test</text>
+      <text x="210" y="35" text-anchor="middle" font-family="-apple-system, sans-serif" font-size="12" font-weight="bold" fill="#B07800">10%</text>
+    </g>
+
+    <!-- Dataset Name -->
+    <text x="340" y="212" text-anchor="middle" dominant-baseline="central" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="11" fill="#B07800">Dataset: CNN/DailyMail (287k articles)</text>
+  </g>
+
+  <!-- Arrow 1→2 -->
+  <line x1="340" y1="220" x2="340" y2="250" stroke="#3D3D3A" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+  <!-- ════════════════════════════════════════
+       STEP 2 — MODEL INITIALIZATION
+  ════════════════════════════════════════ -->
+  <text x="340" y="265" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="11" font-weight="500" fill="#5F5E5A" letter-spacing="0.5">STEP 2</text>
+
+  <g>
+    <rect x="150" y="275" width="380" height="70" rx="8" fill="#E6F1FB" stroke="#185FA5" stroke-width="0.5"/>
+    <text x="340" y="298" text-anchor="middle" dominant-baseline="central" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="14" font-weight="500" fill="#0C447C">Load Pretrained BART</text>
+    <text x="340" y="318" text-anchor="middle" dominant-baseline="central" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="12" fill="#185FA5">Base: facebook/bart-large-cnn</text>
+    <text x="340" y="334" text-anchor="middle" dominant-baseline="central" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="11" fill="#378ADD">406M Parameters · 12 Enc + 12 Dec Layers</text>
+  </g>
+
+  <!-- Arrow 2→3 -->
+  <line x1="340" y1="345" x2="340" y2="375" stroke="#3D3D3A" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+  <!-- ════════════════════════════════════════
+       STEP 3 — TRAINING LOOP (The Cycle)
+  ════════════════════════════════════════ -->
+  <text x="340" y="390" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="11" font-weight="500" fill="#5F5E5A" letter-spacing="0.5">STEP 3</text>
+
+  <g>
+    <!-- Outer Loop Container -->
+    <rect x="60" y="400" width="560" height="360" rx="12" fill="#F8F5FF" stroke="#6A11CB" stroke-width="1.5" stroke-dasharray="6,4"/>
+    <text x="340" y="425" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="13" font-weight="bold" fill="#3A0070">Training Loop (3 Epochs)</text>
+
+    <!-- Loss Chart (Top Right of Container) -->
+    <g transform="translate(460, 440)">
+      <text x="75" y="0" text-anchor="middle" font-family="-apple-system, sans-serif" font-size="10" fill="#555577">Loss Curve</text>
+      <rect x="0" y="10" width="150" height="80" rx="4" fill="#FFFFFF" stroke="#E0E0E0" stroke-width="0.5"/>
+      <!-- Axes -->
+      <line x1="15" y1="75" x2="140" y2="75" stroke="#E0E0E0" stroke-width="1"/>
+      <line x1="15" y1="15" x2="15" y2="75" stroke="#E0E0E0" stroke-width="1"/>
+      <!-- Curve -->
+      <path d="M 20 20 Q 40 50 80 65 T 130 72" fill="none" stroke="#E67E22" stroke-width="2"/>
+      <text x="135" y="78" font-size="8" fill="#555">Steps</text>
+      <text x="5" y="18" font-size="8" fill="#555">Loss</text>
+    </g>
+
+    <!-- Hyperparameter Badge (Left) -->
+    <rect x="80" y="450" width="110" height="100" rx="6" fill="#FFFFFF" stroke="#B07800" stroke-width="1"/>
+    <text x="135" y="470" text-anchor="middle" font-family="-apple-system, sans-serif" font-size="10" font-weight="bold" fill="#7A5000">Hyperparams</text>
+    <text x="95" y="490" font-family="'Courier New', monospace" font-size="9" fill="#555">LR: 3e-5</text>
+    <text x="95" y="505" font-family="'Courier New', monospace" font-size="9" fill="#555">Batch: 4</text>
+    <text x="95" y="520" font-family="'Courier New', monospace" font-size="9" fill="#555">Warmup: 10%</text>
+    <text x="95" y="535" font-family="'Courier New', monospace" font-size="9" fill="#555">Decay: 0.01</text>
+
+    <!-- The Cycle Steps -->
+    <g font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif">
+      <!-- Step 1: Forward -->
+      <rect x="260" y="460" width="150" height="45" rx="6" fill="#E6F1FB" stroke="#185FA5" stroke-width="0.5"/>
+      <text x="335" y="485" text-anchor="middle" font-size="12" font-weight="500" fill="#0C447C">1. Forward Pass</text>
+      
+      <line x1="335" y1="505" x2="335" y2="525" stroke="#185FA5" stroke-width="1.5" marker-end="url(#arrowCyan)"/>
+
+      <!-- Step 2: Loss -->
+      <rect x="260" y="530" width="150" height="45" rx="6" fill="#FFF8E6" stroke="#B07800" stroke-width="0.5"/>
+      <text x="335" y="555" text-anchor="middle" font-size="12" font-weight="500" fill="#7A5000">2. Compute Loss</text>
+      <text x="335" y="568" text-anchor="middle" font-size="9" fill="#B07800">Cross-Entropy</text>
+
+      <line x1="335" y1="575" x2="335" y2="595" stroke="#E67E22" stroke-width="1.5" marker-end="url(#arrowMagenta)"/>
+
+      <!-- Step 3: Backward -->
+      <rect x="260" y="600" width="150" height="45" rx="6" fill="#F8F5FF" stroke="#6A11CB" stroke-width="0.5"/>
+      <text x="335" y="625" text-anchor="middle" font-size="12" font-weight="500" fill="#3A0070">3. Backward Pass</text>
+      <text x="335" y="638" text-anchor="middle" font-size="9" fill="#6A11CB">Gradients</text>
+
+      <line x1="335" y1="645" x2="335" y2="665" stroke="#6A11CB" stroke-width="1.5" marker-end="url(#arrowMagenta)"/>
+
+      <!-- Step 4: Optimizer -->
+      <rect x="260" y="670" width="150" height="45" rx="6" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.5"/>
+      <text x="335" y="695" text-anchor="middle" font-size="12" font-weight="500" fill="#085041">4. Optimizer Step</text>
+      <text x="335" y="708" text-anchor="middle" font-size="9" fill="#0F6E56">AdamW Update</text>
+
+      <!-- Loop Back Arrow (Curved) -->
+      <path d="M 415 690 C 460 690 460 480 415 480" fill="none" stroke="#185FA5" stroke-width="1.5" stroke-dasharray="4,2" marker-end="url(#arrowCyan)"/>
+    </g>
+  </g>
+
+  <!-- Arrow 3→4 -->
+  <line x1="340" y1="760" x2="340" y2="790" stroke="#3D3D3A" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+  <!-- ════════════════════════════════════════
+       STEP 4 — EVALUATION
+  ════════════════════════════════════════ -->
+  <text x="340" y="805" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="11" font-weight="500" fill="#5F5E5A" letter-spacing="0.5">STEP 4</text>
+
+  <g>
+    <rect x="150" y="815" width="380" height="70" rx="8" fill="#F8F5FF" stroke="#6A11CB" stroke-width="0.5"/>
+    <text x="340" y="840" text-anchor="middle" dominant-baseline="central" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="14" font-weight="500" fill="#3A0070">Validation &amp; Checkpointing</text>
+    <text x="340" y="860" text-anchor="middle" dominant-baseline="central" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="12" fill="#6A11CB">Evaluate ROUGE on Val Set → Save Best Model</text>
+    <text x="340" y="876" text-anchor="middle" dominant-baseline="central" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="11" fill="#9B59B6">Target: ROUGE-1 &gt; 0.40</text>
+  </g>
+
+  <!-- Arrow 4→5 -->
+  <line x1="340" y1="885" x2="340" y2="915" stroke="#3D3D3A" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+  <!-- ════════════════════════════════════════
+       STEP 5 — OUTPUT
+  ════════════════════════════════════════ -->
+  <text x="340" y="930" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="11" font-weight="500" fill="#5F5E5A" letter-spacing="0.5">STEP 5</text>
+
+  <g>
+    <rect x="150" y="940" width="380" height="70" rx="8" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.5"/>
+    <text x="340" y="965" text-anchor="middle" dominant-baseline="central" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="14" font-weight="500" fill="#085041">Fine-tuned Model</text>
+    <text x="340" y="985" text-anchor="middle" dominant-baseline="central" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="12" fill="#0F6E56">Saved to: checkpoints/bart-finetuned/</text>
+    <text x="340" y="1000" text-anchor="middle" dominant-baseline="central" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="11" fill="#2ECC71">Expected Improvement: +2-5% ROUGE-1</text>
+  </g>
+
+  <!-- ── Legend ── -->
+  <g font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="12" fill="#3D3D3A" transform="translate(14, 1050)">
+    <rect x="0" y="0" width="11" height="11" rx="2" fill="#B5D4F4" stroke="#185FA5" stroke-width="0.5"/>
+    <text x="16" y="10">Training Loop Steps</text>
+    <rect x="0" y="18" width="11" height="11" rx="2" fill="#D4B3FF" stroke="#6A11CB" stroke-width="0.5"/>
+    <text x="16" y="28">Validation / Eval</text>
+    <rect x="0" y="36" width="11" height="11" rx="2" fill="#9FE1CB" stroke="#0F6E56" stroke-width="0.5"/>
+    <text x="16" y="46">Output</text>
+  </g>
+
+</svg>

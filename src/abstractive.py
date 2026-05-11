@@ -121,12 +121,12 @@ class AbstractiveSummarizer:
         with torch.no_grad():  # No gradient needed for inference
             summary_ids = self.model.generate(
                 **inputs,
-                max_length=config.BART_MAX_LEN,  # Don't exceed 130 tokens
-                min_length=config.BART_MIN_LEN,  # At least 30 tokens
-                num_beams=config.BART_BEAMS,  # Beam search with 4 beams
-                length_penalty=2.0,  # Prefer longer summaries
-                no_repeat_ngram_size=3,  # No repeated 3-grams
-                early_stopping=True,  # Stop when done
+                max_length=config.BART_MAX_LEN,
+                min_length=config.BART_MIN_LEN,
+                num_beams=config.BART_BEAMS,
+                length_penalty=config.BART_LENGTH_PENALTY,
+                no_repeat_ngram_size=config.BART_NO_REPEAT_NGRAM,
+                early_stopping=config.BART_EARLY_STOPPING,
             )
 
         # Step 4: Decode
@@ -173,9 +173,9 @@ class AbstractiveSummarizer:
                     max_length=config.BART_MAX_LEN,
                     min_length=config.BART_MIN_LEN,
                     num_beams=config.BART_BEAMS,
-                    length_penalty=2.0,
-                    no_repeat_ngram_size=3,
-                    early_stopping=True,
+                    length_penalty=config.BART_LENGTH_PENALTY,
+                    no_repeat_ngram_size=config.BART_NO_REPEAT_NGRAM,
+                    early_stopping=config.BART_EARLY_STOPPING,
                 )
 
             # Decode batch

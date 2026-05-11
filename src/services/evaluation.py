@@ -65,6 +65,11 @@ from datasets import load_dataset
 # pip install rouge-score
 from rouge_score import rouge_scorer
 
+# BERTScore - semantic similarity using contextual embeddings
+# Why? ROUGE only measures word overlap, BERTScore measures semantic meaning
+# A paraphrase with different words gets low ROUGE but high BERTScore
+from bert_score import score as bert_score_fn
+
 # Local imports (from src package)
 from .. import config
 from .. import preprocessing
@@ -135,6 +140,24 @@ def compute_rouge(hypotheses: List[str], references: List[str]) -> Dict[str, flo
         "rouge1": float(np.mean(rouge1_scores)),
         "rouge2": float(np.mean(rouge2_scores)),
         "rougeL": float(np.mean(rougeL_scores)),
+    }
+
+
+def compute_bertscore(hypotheses: List[str], references: List[str]) -> Dict[str, float]:
+    """Compute BERTScore for semantic similarity.
+
+    Unlike ROUGE (word overlap), BERTScore uses contextual embeddings
+    to measure semantic meaning. A paraphrase gets high BERTScore even
+    with different words.
+
+    Returns:
+        Dictionary with precision, recall, and F1 scores.
+    """
+    P, R, F1 = bert_score_fn(hypotheses, references, lang="en", verbose=False)
+    return {
+        "precision": float(P.mean()),
+        "recall": float(R.mean()),
+        "f1": float(F1.mean()),
     }
 
 
